@@ -1,0 +1,24 @@
+{
+  "name": "skill-spec-lint",
+  "version": "0.1.0",
+  "description": "Lint agent skill specs for triggers, inputs, safety boundaries, examples, and verification.",
+  "type": "module",
+  "bin": {
+    "skill-spec-lint": "./bin/cli.js"
+  },
+  "scripts": {
+    "test": "node --test",
+    "check": "node scripts/check.js",
+    "smoke": "node bin/cli.js fixtures/sample-skill.md",
+    "smoke:json": "node bin/cli.js fixtures/sample-skill.md --json"
+  },
+  "keywords": [
+    "agent-skill",
+    "skill-lint",
+    "safety",
+    "documentation",
+    "codex"
+  ],
+  "author": "Roger Chappell",
+  "license": "MIT"
+}
