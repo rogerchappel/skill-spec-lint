@@ -38,5 +38,9 @@
     "README.md",
     "LICENSE",
     "CHANGELOG.md"
-  ]
+  ],
+  "bugs": {
+    "url": "https://github.com/rogerchappel/skill-spec-lint/issues"
+  },
+  "homepage": "https://github.com/rogerchappel/skill-spec-lint#readme"
 }
