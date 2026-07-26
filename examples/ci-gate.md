@@ -8,5 +8,5 @@ npm test
 node bin/cli.js ./SKILL.md --json
 ```
 
-Treat `needs-work` as a release review finding. It should block public reuse
-until the missing sections are fixed or deliberately waived in the PR.
+Treat `needs-work` (exit status 2) as a release review finding. It should block
+public reuse until every required section contains content.
