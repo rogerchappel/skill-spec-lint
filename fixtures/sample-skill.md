@@ -1,5 +1,7 @@
 # Repo Review Skill
 
+## When to use
+
 Use when an agent needs to review a repository change before release.
 
 ## Inputs
