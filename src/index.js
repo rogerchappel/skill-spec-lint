@@ -5,9 +5,9 @@ export const rules = [
     "trigger",
     "Declare when to use the skill",
     [
-      "use when",
       "trigger",
-      "when to use"
+      "when to use",
+      "when-to-use"
     ]
   ],
   [
@@ -15,8 +15,7 @@ export const rules = [
     "List required inputs or tools",
     [
       "input",
-      "required",
-      "tool"
+      "inputs"
     ]
   ],
   [
@@ -24,9 +23,9 @@ export const rules = [
     "State side-effect boundaries",
     [
       "side effect",
+      "side effects",
       "side-effect",
-      "write",
-      "external"
+      "side-effects"
     ]
   ],
   [
@@ -34,33 +33,55 @@ export const rules = [
     "Describe approval requirements",
     [
       "approval",
-      "ask before",
-      "confirm"
+      "approvals"
     ]
   ],
   [
     "examples",
     "Include at least one example",
     [
-      "example"
+      "example",
+      "examples"
     ]
   ],
   [
     "verification",
     "Explain validation or verification",
     [
-      "verify",
       "verification",
-      "validate",
-      "test"
+      "validation"
     ]
   ]
 ];
 
+function sectionsByHeading(text) {
+  const sections = new Map();
+  let currentHeading;
+
+  for (const line of String(text || "").split(/\r?\n/)) {
+    const heading = line.match(/^#{2,6}\s+(.+?)\s*#*\s*$/);
+    if (heading) {
+      currentHeading = heading[1].trim().toLowerCase();
+      if (!sections.has(currentHeading)) {
+        sections.set(currentHeading, []);
+      }
+    } else if (currentHeading) {
+      sections.get(currentHeading).push(line);
+    }
+  }
+
+  return sections;
+}
+
 export function auditText(text, options = {}) {
-  const normalized = String(text || "").toLowerCase();
-  const findings = rules.map(([id, message, terms]) => {
-    const matched = terms.some((term) => normalized.includes(term));
+  const sections = sectionsByHeading(text);
+  const findings = rules.map(([id, message, headings]) => {
+    const content = headings
+      .filter((heading) => sections.has(heading))
+      .flatMap((heading) => sections.get(heading))
+      .join("\n")
+      .trim();
+    const matched = content.length > 0;
     return {
       id,
       message,
@@ -70,12 +91,15 @@ export function auditText(text, options = {}) {
   });
   const passed = findings.filter((finding) => finding.passed).length;
   const score = Math.round((passed / findings.length) * 100);
+  const status = options.threshold === undefined
+    ? passed === findings.length
+    : score >= options.threshold;
   return {
     tool: "skill-spec-lint",
     score,
     passed,
     total: findings.length,
-    status: score >= (options.threshold ?? 80) ? "pass" : "needs-work",
+    status: status ? "pass" : "needs-work",
     findings,
   };
 }
