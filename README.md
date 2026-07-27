@@ -34,6 +34,12 @@ The CLI returns `pass` only when all six required sections contain content and
 with status 2 for `needs-work`. Human-readable output is markdown; `--json`
 returns stable fields for automation.
 
+The accepted form is exactly `skill-spec-lint <SKILL.md> [--json]` (the
+`--json` flag may appear before or after the file). Unknown or duplicate flags,
+missing files, and multiple file operands exit with status 1, write a concise
+diagnostic to stderr, and do not print an audit report. Run
+`skill-spec-lint --help` for the complete argument and exit-code reference.
+
 The required level 2–6 Markdown headings are `When to use` (or `Trigger`),
 `Inputs`, `Side effects`, `Approval`, `Examples`, and `Verification`. Heading
 matching is case-insensitive; keywords elsewhere in the document do not satisfy
