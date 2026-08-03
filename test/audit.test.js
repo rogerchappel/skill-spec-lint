@@ -35,6 +35,84 @@ test("keywords outside required sections do not satisfy checks", () => {
   assert.equal(result.passed, 0);
 });
 
+test("headings inside backtick and tilde fences do not satisfy checks", () => {
+  const result = auditText(`
+## Trigger
+Run this skill for release checks.
+
+\`\`\`markdown
+## Inputs
+An input shown only in an example.
+## Side effects
+A side effect shown only in an example.
+\`\`\`
+
+~~~markdown
+## Approval
+An approval shown only in an example.
+## Examples
+An example nested inside the example.
+## Verification
+A verification shown only in an example.
+~~~
+`);
+
+  assert.equal(result.status, "needs-work");
+  assert.equal(result.passed, 1);
+  assert.deepEqual(
+    result.findings.filter((finding) => finding.passed).map((finding) => finding.id),
+    ["trigger"],
+  );
+});
+
+test("fences close only with a matching marker of sufficient length", () => {
+  const result = auditText(`
+    \`\`\`\`markdown
+## Inputs
+Still fenced because four-space indentation cannot open a fence.
+
+\`\`\`\`markdown
+## Inputs
+Fenced input.
+\`\`\`
+## Side effects
+Still fenced after a shorter closing sequence.
+~~~~
+## Approval
+Still fenced after a different marker.
+\`\`\`\`
+
+~~~~~markdown
+## Examples
+Fenced example.
+~~~~
+## Verification
+Still fenced after a shorter closing sequence.
+~~~~~
+
+## Trigger
+Run this skill after the valid closures.
+`);
+
+  assert.equal(result.status, "needs-work");
+  assert.equal(result.passed, 2);
+  assert.deepEqual(
+    result.findings.filter((finding) => finding.passed).map((finding) => finding.id),
+    ["trigger", "inputs"],
+  );
+});
+
+test("genuine level 2 through 6 headings remain eligible", () => {
+  for (let level = 2; level <= 6; level += 1) {
+    const result = auditText(`${"#".repeat(level)} Trigger\nContent\n`);
+    assert.equal(
+      result.findings.find((finding) => finding.id === "trigger")?.passed,
+      true,
+      `expected level ${level} heading to pass`,
+    );
+  }
+});
+
 test("one missing required section fails the default release gate", () => {
   const result = auditText(fixture("missing-approval.md"));
   assert.equal(result.status, "needs-work");

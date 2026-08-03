@@ -57,8 +57,33 @@ export const rules = [
 function sectionsByHeading(text) {
   const sections = new Map();
   let currentHeading;
+  let fence;
 
   for (const line of String(text || "").split(/\r?\n/)) {
+    if (fence) {
+      const closingFence = line.match(/^ {0,3}(`+|~+)[ \t]*$/);
+      if (
+        closingFence
+        && closingFence[1][0] === fence.marker
+        && closingFence[1].length >= fence.length
+      ) {
+        fence = undefined;
+      }
+      continue;
+    }
+
+    const openingFence = line.match(/^ {0,3}(`{3,}|~{3,})(.*)$/);
+    if (
+      openingFence
+      && (openingFence[1][0] !== "`" || !openingFence[2].includes("`"))
+    ) {
+      fence = {
+        marker: openingFence[1][0],
+        length: openingFence[1].length,
+      };
+      continue;
+    }
+
     const heading = line.match(/^#{2,6}\s+(.+?)\s*#*\s*$/);
     if (heading) {
       currentHeading = heading[1].trim().toLowerCase();

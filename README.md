@@ -43,7 +43,10 @@ diagnostic to stderr, and do not print an audit report. Run
 The required level 2–6 Markdown headings are `When to use` (or `Trigger`),
 `Inputs`, `Side effects`, `Approval`, `Examples`, and `Verification`. Heading
 matching is case-insensitive; keywords elsewhere in the document do not satisfy
-a check.
+a check. ATX headings inside backtick or tilde fenced code blocks are treated as
+example content and do not satisfy a check. Fences follow Markdown's marker and
+closure rules, including longer opening fences that require a closing fence of
+the same marker and at least the same length.
 
 ## Safety
 
