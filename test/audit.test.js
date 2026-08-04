@@ -15,6 +15,13 @@ test("passing fixture clears the release threshold", () => {
   assert.equal(result.score, 100);
 });
 
+test("shipped SKILL.md clears its own release gate", () => {
+  const text = readFileSync(new URL("../SKILL.md", import.meta.url), "utf8");
+  const result = auditText(text);
+  assert.equal(result.status, "pass");
+  assert.equal(result.score, 100);
+});
+
 test("thin fixture reports actionable gaps", () => {
   const text = fixture("thin.md");
   const result = auditText(text);

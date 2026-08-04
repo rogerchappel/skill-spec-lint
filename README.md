@@ -9,6 +9,7 @@ The CLI scores a SKILL.md-like document against practical agent-readiness rules 
 ```sh
 npm install
 npm test
+npm run self:audit
 npm run smoke
 node bin/cli.js fixtures/sample-skill.md --json
 ```
@@ -65,6 +66,7 @@ This project reads local markdown and writes only to stdout/stderr. It has no te
 ```sh
 npm test
 npm run check
+npm run self:audit
 npm run smoke
 npm run smoke:json
 npm run package:smoke

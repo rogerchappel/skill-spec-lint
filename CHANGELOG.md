@@ -4,6 +4,8 @@
 
 - Recognize CommonMark ATX headings with up to three leading spaces while
   continuing to reject four-space indented code.
+- Keep the shipped `SKILL.md` passing its own six-section gate during packaging
+  and CI.
 - Require non-empty release-readiness sections instead of matching keywords in
   unrelated prose.
 - Make any missing required section fail the default CLI release gate.
