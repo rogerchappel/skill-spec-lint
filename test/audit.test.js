@@ -113,6 +113,23 @@ test("genuine level 2 through 6 headings remain eligible", () => {
   }
 });
 
+test("ATX headings accept up to three leading spaces", () => {
+  for (let spaces = 0; spaces <= 3; spaces += 1) {
+    const result = auditText(`${" ".repeat(spaces)}## Trigger\nContent\n`);
+    assert.equal(
+      result.findings.find((finding) => finding.id === "trigger")?.passed,
+      true,
+      `expected ${spaces} leading spaces to be accepted`,
+    );
+  }
+});
+
+test("four-space indented headings remain code, not sections", () => {
+  const result = auditText("    ## Trigger\n    Content\n");
+  assert.equal(result.status, "needs-work");
+  assert.equal(result.passed, 0);
+});
+
 test("one missing required section fails the default release gate", () => {
   const result = auditText(fixture("missing-approval.md"));
   assert.equal(result.status, "needs-work");
