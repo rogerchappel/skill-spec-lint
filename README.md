@@ -9,6 +9,7 @@ The CLI scores a SKILL.md-like document against practical agent-readiness rules 
 ```sh
 npm install
 npm test
+npm run self:audit
 npm run smoke
 node bin/cli.js fixtures/sample-skill.md --json
 ```
@@ -43,7 +44,9 @@ diagnostic to stderr, and do not print an audit report. Run
 The required level 2–6 Markdown headings are `When to use` (or `Trigger`),
 `Inputs`, `Side effects`, `Approval`, `Examples`, and `Verification`. Heading
 matching is case-insensitive; keywords elsewhere in the document do not satisfy
-a check. ATX headings inside backtick or tilde fenced code blocks are treated as
+a check. As in CommonMark, ATX headings may have zero to three leading spaces;
+four-space indented lines are code and do not count. ATX headings inside
+backtick or tilde fenced code blocks are treated as
 example content and do not satisfy a check. Fences follow Markdown's marker and
 closure rules, including longer opening fences that require a closing fence of
 the same marker and at least the same length.
@@ -63,6 +66,7 @@ This project reads local markdown and writes only to stdout/stderr. It has no te
 ```sh
 npm test
 npm run check
+npm run self:audit
 npm run smoke
 npm run smoke:json
 npm run package:smoke

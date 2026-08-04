@@ -15,4 +15,7 @@ jobs:
           node-version: "22"
       - run: npm test
       - run: npm run check
+      - run: npm run self:audit
       - run: npm run smoke
+      - run: npm run smoke:json
+      - run: npm run package:smoke

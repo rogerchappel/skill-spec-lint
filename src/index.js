@@ -84,7 +84,7 @@ function sectionsByHeading(text) {
       continue;
     }
 
-    const heading = line.match(/^#{2,6}\s+(.+?)\s*#*\s*$/);
+    const heading = line.match(/^ {0,3}#{2,6}\s+(.+?)\s*#*\s*$/);
     if (heading) {
       currentHeading = heading[1].trim().toLowerCase();
       if (!sections.has(currentHeading)) {

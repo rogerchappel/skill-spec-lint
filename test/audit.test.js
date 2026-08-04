@@ -15,6 +15,13 @@ test("passing fixture clears the release threshold", () => {
   assert.equal(result.score, 100);
 });
 
+test("shipped SKILL.md clears its own release gate", () => {
+  const text = readFileSync(new URL("../SKILL.md", import.meta.url), "utf8");
+  const result = auditText(text);
+  assert.equal(result.status, "pass");
+  assert.equal(result.score, 100);
+});
+
 test("thin fixture reports actionable gaps", () => {
   const text = fixture("thin.md");
   const result = auditText(text);
@@ -111,6 +118,23 @@ test("genuine level 2 through 6 headings remain eligible", () => {
       `expected level ${level} heading to pass`,
     );
   }
+});
+
+test("ATX headings accept up to three leading spaces", () => {
+  for (let spaces = 0; spaces <= 3; spaces += 1) {
+    const result = auditText(`${" ".repeat(spaces)}## Trigger\nContent\n`);
+    assert.equal(
+      result.findings.find((finding) => finding.id === "trigger")?.passed,
+      true,
+      `expected ${spaces} leading spaces to be accepted`,
+    );
+  }
+});
+
+test("four-space indented headings remain code, not sections", () => {
+  const result = auditText("    ## Trigger\n    Content\n");
+  assert.equal(result.status, "needs-work");
+  assert.equal(result.passed, 0);
 });
 
 test("one missing required section fails the default release gate", () => {
