@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Recognize CommonMark ATX headings with up to three leading spaces while
+  continuing to reject four-space indented code.
 - Require non-empty release-readiness sections instead of matching keywords in
   unrelated prose.
 - Make any missing required section fail the default CLI release gate.
