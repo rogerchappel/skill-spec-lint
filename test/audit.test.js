@@ -120,6 +120,48 @@ test("genuine level 2 through 6 headings remain eligible", () => {
   }
 });
 
+test("content in a nested subsection satisfies its required parent", () => {
+  const result = auditText(`
+## Inputs
+### Required files
+- config.json
+`);
+
+  assert.equal(
+    result.findings.find((finding) => finding.id === "inputs")?.passed,
+    true,
+  );
+});
+
+test("deeply nested content satisfies every required ancestor", () => {
+  const result = auditText(`
+## Inputs
+### Required files
+#### Configuration
+##### Production
+- config.json
+`);
+
+  assert.equal(
+    result.findings.find((finding) => finding.id === "inputs")?.passed,
+    true,
+  );
+});
+
+test("content in a sibling section does not satisfy a required section", () => {
+  const result = auditText(`
+## Inputs
+### Required files
+## Notes
+This content belongs only to Notes.
+`);
+
+  assert.equal(
+    result.findings.find((finding) => finding.id === "inputs")?.passed,
+    false,
+  );
+});
+
 test("ATX headings accept up to three leading spaces", () => {
   for (let spaces = 0; spaces <= 3; spaces += 1) {
     const result = auditText(`${" ".repeat(spaces)}## Trigger\nContent\n`);
