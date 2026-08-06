@@ -44,7 +44,10 @@ diagnostic to stderr, and do not print an audit report. Run
 The required level 2–6 Markdown headings are `When to use` (or `Trigger`),
 `Inputs`, `Side effects`, `Approval`, `Examples`, and `Verification`. Heading
 matching is case-insensitive; keywords elsewhere in the document do not satisfy
-a check. As in CommonMark, ATX headings may have zero to three leading spaces;
+a check. Meaningful content in descendant subsections satisfies its nearest
+required parent section until a heading of equal or higher level begins; content
+in an unrelated sibling section does not. As in CommonMark, ATX headings may
+have zero to three leading spaces;
 four-space indented lines are code and do not count. ATX headings inside
 backtick or tilde fenced code blocks are treated as
 example content and do not satisfy a check. Fences follow Markdown's marker and

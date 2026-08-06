@@ -13,7 +13,10 @@ Each signal requires a matching level 2–6 Markdown heading with non-empty
 content. Matching is case-insensitive and accepts singular headings where
 appropriate. ATX headings may have zero to three leading spaces, while a
 four-space indented line is code and does not start a section. Prose outside a
-matching section does not count. All six checks
+matching section does not count. Non-empty content in a descendant subsection
+counts toward its nearest required parent until a heading of equal or higher
+level closes that section. Content under an unrelated sibling does not count.
+All six checks
 must pass for the default release gate to pass, so a score of 83 remains
 `needs-work`.
 

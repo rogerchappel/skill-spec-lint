@@ -56,7 +56,7 @@ export const rules = [
 
 function sectionsByHeading(text) {
   const sections = new Map();
-  let currentHeading;
+  const headingStack = [];
   let fence;
 
   for (const line of String(text || "").split(/\r?\n/)) {
@@ -84,14 +84,27 @@ function sectionsByHeading(text) {
       continue;
     }
 
-    const heading = line.match(/^ {0,3}#{2,6}\s+(.+?)\s*#*\s*$/);
+    const heading = line.match(/^ {0,3}(#{1,6})\s+(.+?)\s*#*\s*$/);
     if (heading) {
-      currentHeading = heading[1].trim().toLowerCase();
-      if (!sections.has(currentHeading)) {
-        sections.set(currentHeading, []);
+      const level = heading[1].length;
+      while (
+        headingStack.length > 0
+        && headingStack.at(-1).level >= level
+      ) {
+        headingStack.pop();
       }
-    } else if (currentHeading) {
-      sections.get(currentHeading).push(line);
+
+      if (level >= 2) {
+        const name = heading[2].trim().toLowerCase();
+        if (!sections.has(name)) {
+          sections.set(name, []);
+        }
+        headingStack.push({ level, name });
+      }
+    } else {
+      for (const { name } of headingStack) {
+        sections.get(name).push(line);
+      }
     }
   }
 
