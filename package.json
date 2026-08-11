@@ -2,6 +2,9 @@
   "name": "skill-spec-lint",
   "version": "0.1.0",
   "description": "Lint agent skill specs for triggers, inputs, safety boundaries, examples, and verification.",
+  "engines": {
+    "node": ">=18"
+  },
   "type": "module",
   "bin": {
     "skill-spec-lint": "./bin/cli.js"
