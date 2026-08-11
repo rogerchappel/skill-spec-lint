@@ -4,6 +4,8 @@ Lint agent skill specs for triggers, inputs, safety boundaries, examples, and ve
 
 The CLI scores a SKILL.md-like document against practical agent-readiness rules and returns actionable gaps.
 
+Requires Node.js 18 or newer. CI verifies Node.js 18, 22, and 24.
+
 ## Quickstart
 
 ```sh
@@ -19,8 +21,12 @@ node bin/cli.js fixtures/sample-skill.md --json
 Audit a local markdown file:
 
 ```sh
-npx skill-spec-lint ./SKILL.md
+node bin/cli.js ./SKILL.md
 ```
+
+The package is not yet published to npm, so run the CLI from a checkout as
+shown above. After publication, the equivalent registry-backed command will be
+`npx skill-spec-lint ./SKILL.md`.
 
 Use JSON for another agent or CI harness:
 
