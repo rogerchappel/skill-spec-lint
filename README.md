@@ -54,7 +54,9 @@ a check. HTML comments do not count as meaningful content, while visible text
 before or after a comment does. Meaningful content in descendant subsections
 satisfies its nearest required parent section until a heading of equal or higher
 level begins; content in an unrelated sibling section does not. As in CommonMark, ATX headings may
-have zero to three leading spaces;
+have zero to three leading spaces. An optional closing sequence of `#`
+characters must be separated from the heading text by whitespace: `## Inputs #`
+matches `Inputs`, while `## Inputs#` names the distinct heading `Inputs#`;
 four-space indented lines are code and do not count. ATX headings inside
 backtick or tilde fenced code blocks are treated as
 example content and do not satisfy a check. Fences follow Markdown's marker and
