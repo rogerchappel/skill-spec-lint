@@ -162,6 +162,59 @@ This content belongs only to Notes.
   );
 });
 
+test("single-line HTML comments do not satisfy required sections", () => {
+  const result = auditText("## Inputs\n<!-- TODO: document inputs -->\n");
+
+  assert.equal(
+    result.findings.find((finding) => finding.id === "inputs")?.passed,
+    false,
+  );
+});
+
+test("multiline HTML comments do not satisfy required sections", () => {
+  const result = auditText(`
+## Approval
+<!--
+Describe approval requirements before release.
+-->
+`);
+
+  assert.equal(
+    result.findings.find((finding) => finding.id === "approval")?.passed,
+    false,
+  );
+});
+
+test("visible prose around HTML comments satisfies required sections", () => {
+  for (const content of [
+    "Use config.json <!-- once the schema is stable --> as input.",
+    "<!-- internal note --> Use config.json as input.",
+    "Use <!-- internal\nnote --> config.json as input.",
+  ]) {
+    const result = auditText(`## Inputs\n${content}\n`);
+    assert.equal(
+      result.findings.find((finding) => finding.id === "inputs")?.passed,
+      true,
+      `expected visible prose to count in: ${content}`,
+    );
+  }
+});
+
+test("HTML comment markers inside fenced examples do not hide later prose", () => {
+  const result = auditText(`
+## Examples
+\`\`\`html
+<!-- example comment begins
+\`\`\`
+Run the skill with config.json.
+`);
+
+  assert.equal(
+    result.findings.find((finding) => finding.id === "examples")?.passed,
+    true,
+  );
+});
+
 test("ATX headings accept up to three leading spaces", () => {
   for (let spaces = 0; spaces <= 3; spaces += 1) {
     const result = auditText(`${" ".repeat(spaces)}## Trigger\nContent\n`);
