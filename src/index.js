@@ -111,15 +111,20 @@ function sectionsByHeading(text) {
   return sections;
 }
 
+function hasMeaningfulContent(lines) {
+  return lines
+    .join("\n")
+    .replace(/<!--[\s\S]*?-->/g, "")
+    .trim()
+    .length > 0;
+}
+
 export function auditText(text, options = {}) {
   const sections = sectionsByHeading(text);
   const findings = rules.map(([id, message, headings]) => {
-    const content = headings
+    const matched = hasMeaningfulContent(headings
       .filter((heading) => sections.has(heading))
-      .flatMap((heading) => sections.get(heading))
-      .join("\n")
-      .trim();
-    const matched = content.length > 0;
+      .flatMap((heading) => sections.get(heading)));
     return {
       id,
       message,
