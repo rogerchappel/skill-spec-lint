@@ -120,6 +120,46 @@ test("genuine level 2 through 6 headings remain eligible", () => {
   }
 });
 
+test("trailing hashes without separating whitespace remain heading text", () => {
+  const result = auditText(`
+## Trigger#
+Run on demand.
+## Inputs#
+config.json
+## Side effects#
+Writes a report.
+## Approval#
+Approval is required.
+## Examples#
+Run the command.
+## Verification#
+Check the report.
+`);
+
+  assert.equal(result.status, "needs-work");
+  assert.equal(result.passed, 0);
+});
+
+test("whitespace-separated ATX closing sequences remain optional", () => {
+  const result = auditText(`
+## Trigger ##
+Run on demand.
+## Inputs #
+config.json
+## Side effects ###
+Writes a report.
+## Approval ####
+Approval is required.
+## Examples #####
+Run the command.
+## Verification ######
+Check the report.
+`);
+
+  assert.equal(result.status, "pass");
+  assert.equal(result.passed, 6);
+});
+
 test("content in a nested subsection satisfies its required parent", () => {
   const result = auditText(`
 ## Inputs
@@ -251,4 +291,16 @@ test("CLI exits 2 when exactly one required section is missing", () => {
   );
   assert.equal(run.status, 2);
   assert.equal(JSON.parse(run.stdout).status, "needs-work");
+});
+
+test("CLI rejects required-section near misses with attached trailing hashes", () => {
+  const run = spawnSync(
+    process.execPath,
+    ["bin/cli.js", "fixtures/trailing-hash-headings.md", "--json"],
+    { encoding: "utf8" },
+  );
+  assert.equal(run.status, 2);
+  const result = JSON.parse(run.stdout);
+  assert.equal(result.status, "needs-work");
+  assert.equal(result.passed, 0);
 });

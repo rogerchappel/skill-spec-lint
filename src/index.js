@@ -84,7 +84,9 @@ function sectionsByHeading(text) {
       continue;
     }
 
-    const heading = line.match(/^ {0,3}(#{1,6})\s+(.+?)\s*#*\s*$/);
+    const heading = line.match(
+      /^ {0,3}(#{1,6})[ \t]+(.+?)(?:[ \t]+#+[ \t]*)?$/,
+    );
     if (heading) {
       const level = heading[1].length;
       while (
