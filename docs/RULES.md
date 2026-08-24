@@ -26,3 +26,8 @@ sections. Fence openers may use three or more markers and up to three leading
 spaces. A fence closes only with the same marker and at least as many markers as
 its opener, following Markdown fence semantics. Genuine level 2–6 headings with
 up to three leading spaces outside fences remain eligible.
+
+Complete and unclosed HTML comments are non-visible before section headings and
+content are attributed. Visible text surrounding a comment remains eligible.
+Inside a fenced example, HTML comment markers are ordinary example text and do
+not change the visibility of prose after the fence closes.
