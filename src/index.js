@@ -58,10 +58,11 @@ function sectionsByHeading(text) {
   const sections = new Map();
   const headingStack = [];
   let fence;
+  let inComment = false;
 
-  for (const line of String(text || "").split(/\r?\n/)) {
+  for (const rawLine of String(text || "").split(/\r?\n/)) {
     if (fence) {
-      const closingFence = line.match(/^ {0,3}(`+|~+)[ \t]*$/);
+      const closingFence = rawLine.match(/^ {0,3}(`+|~+)[ \t]*$/);
       if (
         closingFence
         && closingFence[1][0] === fence.marker
@@ -72,6 +73,9 @@ function sectionsByHeading(text) {
       continue;
     }
 
+    const visibility = visibleHtml(rawLine, inComment);
+    const line = visibility.line;
+    inComment = visibility.inComment;
     const openingFence = line.match(/^ {0,3}(`{3,}|~{3,})(.*)$/);
     if (
       openingFence
@@ -111,6 +115,29 @@ function sectionsByHeading(text) {
   }
 
   return sections;
+}
+
+function visibleHtml(line, inComment) {
+  let visible = "";
+  let remainder = line;
+
+  while (remainder) {
+    if (inComment) {
+      const end = remainder.indexOf("-->");
+      if (end === -1) return { line: visible, inComment };
+      inComment = false;
+      remainder = remainder.slice(end + 3);
+      continue;
+    }
+
+    const start = remainder.indexOf("<!--");
+    if (start === -1) return { line: visible + remainder, inComment };
+    visible += remainder.slice(0, start);
+    inComment = true;
+    remainder = remainder.slice(start + 4);
+  }
+
+  return { line: visible, inComment };
 }
 
 function hasMeaningfulContent(lines) {

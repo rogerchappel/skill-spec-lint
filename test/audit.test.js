@@ -255,6 +255,35 @@ Run the skill with config.json.
   );
 });
 
+for (const [name, newline] of [["LF", "\n"], ["CRLF", "\r\n"]]) {
+  test(`headings inside complete and unclosed HTML comments stay hidden with ${name}`, () => {
+    const markdown = [
+      "<!--",
+      "## Inputs",
+      "Commented guidance only.",
+      "-->",
+      "## Examples",
+      "Visible example.",
+      "<!--",
+      "## Verification",
+      "Unfinished commented guidance.",
+    ].join(newline);
+    const result = auditText(markdown);
+
+    assert.equal(result.findings.find((finding) => finding.id === "inputs")?.passed, false);
+    assert.equal(result.findings.find((finding) => finding.id === "examples")?.passed, true);
+    assert.equal(result.findings.find((finding) => finding.id === "verification")?.passed, false);
+  });
+}
+
+test("visible heading and prose fragments around comments remain eligible", () => {
+  const result = auditText("<!-- note --> ## Inputs\nUse <!-- internal --> config.json.\n");
+  assert.equal(
+    result.findings.find((finding) => finding.id === "inputs")?.passed,
+    true,
+  );
+});
+
 test("ATX headings accept up to three leading spaces", () => {
   for (let spaces = 0; spaces <= 3; spaces += 1) {
     const result = auditText(`${" ".repeat(spaces)}## Trigger\nContent\n`);
