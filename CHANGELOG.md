@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Restore the complete canonical MIT license and verify it is included in the
+  package tarball.
 - Recognize CommonMark ATX headings with up to three leading spaces while
   continuing to reject four-space indented code.
 - Keep the shipped `SKILL.md` passing its own six-section gate during packaging
