@@ -173,6 +173,33 @@ test("content in a nested subsection satisfies its required parent", () => {
   );
 });
 
+test("thematic breaks do not satisfy required sections", () => {
+  for (const thematicBreak of ["---", "***", "___", "- - -", "  * * *  "]) {
+    const result = auditText(`## Inputs\n${thematicBreak}\n`);
+    assert.equal(
+      result.findings.find((finding) => finding.id === "inputs")?.passed,
+      false,
+      `expected ${JSON.stringify(thematicBreak)} to remain empty`,
+    );
+  }
+});
+
+test("prose, lists, fenced code, and descendant content satisfy sections", () => {
+  for (const content of [
+    "Visible prose.",
+    "- config.json",
+    "```sh\nnode bin/cli.js SKILL.md\n```",
+    "### Required files\nconfig.json",
+  ]) {
+    const result = auditText(`## Inputs\n${content}\n`);
+    assert.equal(
+      result.findings.find((finding) => finding.id === "inputs")?.passed,
+      true,
+      `expected visible content to count in: ${content}`,
+    );
+  }
+});
+
 test("deeply nested content satisfies every required ancestor", () => {
   const result = auditText(`
 ## Inputs
