@@ -23,6 +23,17 @@ test("human and JSON invocations preserve report exit behavior", () => {
   assert.equal(json.stderr, "");
 });
 
+test("JSON output reports thematic-break-only sections as empty", () => {
+  const result = run(fixture("thematic-break-only.md"), "--json");
+  const report = JSON.parse(result.stdout);
+
+  assert.equal(result.status, 2);
+  assert.equal(result.stderr, "");
+  assert.equal(report.status, "needs-work");
+  assert.equal(report.passed, 5);
+  assert.equal(report.findings.find((finding) => finding.id === "inputs")?.passed, false);
+});
+
 test("help is successful and documents the complete argument contract", () => {
   const result = run("--help");
   assert.equal(result.status, 0);

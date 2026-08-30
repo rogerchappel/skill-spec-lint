@@ -60,6 +60,12 @@ function sectionsByHeading(text) {
   let fence;
   let inComment = false;
 
+  const appendToOpenSections = (line) => {
+    for (const { name } of headingStack) {
+      sections.get(name).push(line);
+    }
+  };
+
   for (const rawLine of String(text || "").split(/\r?\n/)) {
     if (fence) {
       const closingFence = rawLine.match(/^ {0,3}(`+|~+)[ \t]*$/);
@@ -69,6 +75,8 @@ function sectionsByHeading(text) {
         && closingFence[1].length >= fence.length
       ) {
         fence = undefined;
+      } else {
+        appendToOpenSections(rawLine);
       }
       continue;
     }
@@ -108,9 +116,7 @@ function sectionsByHeading(text) {
         headingStack.push({ level, name });
       }
     } else {
-      for (const { name } of headingStack) {
-        sections.get(name).push(line);
-      }
+      appendToOpenSections(line);
     }
   }
 
@@ -142,6 +148,7 @@ function visibleHtml(line, inComment) {
 
 function hasMeaningfulContent(lines) {
   return lines
+    .filter((line) => !/^ {0,3}(?:(?:\*[ \t]*){3,}|(?:-[ \t]*){3,}|(?:_[ \t]*){3,})$/.test(line))
     .join("\n")
     .replace(/<!--[\s\S]*?-->/g, "")
     .trim()

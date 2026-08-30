@@ -52,10 +52,12 @@ The required level 2–6 Markdown headings are `When to use` (or `Trigger`),
 matching is case-insensitive; keywords elsewhere in the document do not satisfy
 a check. Complete and unclosed HTML comments are removed before headings and
 content are attributed, while visible text before or after a comment still
-counts. Comment markers inside fenced examples remain example text and do not
-hide later prose. Meaningful content in descendant subsections
-satisfies its nearest required parent section until a heading of equal or higher
-level begins; content in an unrelated sibling section does not. As in CommonMark, ATX headings may
+counts. A section containing only a Markdown thematic break remains empty;
+visible prose, list items, fenced code examples, and meaningful content in
+descendant subsections satisfy the required parent until a heading of equal or
+higher level begins. Content in an unrelated sibling section does not. Comment
+markers inside fenced examples remain example text and do not hide later prose.
+As in CommonMark, ATX headings may
 have zero to three leading spaces. An optional closing sequence of `#`
 characters must be separated from the heading text by whitespace: `## Inputs #`
 matches `Inputs`, while `## Inputs#` names the distinct heading `Inputs#`;
