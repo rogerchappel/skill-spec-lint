@@ -16,6 +16,7 @@
     "smoke": "node bin/cli.js fixtures/sample-skill.md",
     "smoke:json": "node bin/cli.js fixtures/sample-skill.md --json",
     "package:smoke": "node scripts/package-smoke.js",
+    "release:check": "npm test && npm run check && npm run self:audit && npm run smoke && npm run smoke:json && npm run package:smoke",
     "prepack": "npm run self:audit"
   },
   "keywords": [
