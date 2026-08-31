@@ -80,10 +80,9 @@ This project reads local markdown and writes only to stdout/stderr. It has no te
 ## Verification
 
 ```sh
-npm test
-npm run check
-npm run self:audit
-npm run smoke
-npm run smoke:json
-npm run package:smoke
+npm run release:check
 ```
+
+Run this canonical pre-tag gate from a clean source checkout. It runs the full
+test, source-audit, CLI, and packed-artifact verification sequence, including
+installing the real tarball in an isolated project and executing its binary.
