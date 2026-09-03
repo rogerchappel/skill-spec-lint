@@ -30,4 +30,7 @@ up to three leading spaces outside fences remain eligible.
 Complete and unclosed HTML comments are non-visible before section headings and
 content are attributed. Visible text surrounding a comment remains eligible.
 Inside a fenced example, HTML comment markers are ordinary example text and do
-not change the visibility of prose after the fence closes.
+not change the visibility of prose after the fence closes. CommonMark raw HTML
+blocks likewise cannot supply required headings or content. Section detection
+resumes after the raw block's CommonMark closing boundary, so later visible
+Markdown remains eligible.
