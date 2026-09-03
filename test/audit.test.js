@@ -283,6 +283,25 @@ Run the skill with config.json.
 });
 
 for (const [name, newline] of [["LF", "\n"], ["CRLF", "\r\n"]]) {
+  test(`ignores required sections inside CommonMark raw HTML blocks with ${name}`, () => {
+    const markdown = fixture("raw-html-sections.md").replaceAll("\n", newline);
+    const result = auditText(markdown);
+
+    assert.equal(result.status, "needs-work");
+    assert.equal(result.passed, 0);
+  });
+
+  test(`recognizes real sections after CommonMark raw HTML blocks with ${name}`, () => {
+    const markdown = `${fixture("raw-html-sections.md")}\n## Inputs\nconfig.json\n`
+      .replaceAll("\n", newline);
+    const result = auditText(markdown);
+
+    assert.equal(result.passed, 1);
+    assert.equal(result.findings.find((finding) => finding.id === "inputs")?.passed, true);
+  });
+}
+
+for (const [name, newline] of [["LF", "\n"], ["CRLF", "\r\n"]]) {
   test(`headings inside complete and unclosed HTML comments stay hidden with ${name}`, () => {
     const markdown = [
       "<!--",
@@ -347,6 +366,18 @@ test("CLI exits 2 when exactly one required section is missing", () => {
   );
   assert.equal(run.status, 2);
   assert.equal(JSON.parse(run.stdout).status, "needs-work");
+});
+
+test("CLI rejects an all-fake CommonMark raw HTML skill", () => {
+  const run = spawnSync(
+    process.execPath,
+    ["bin/cli.js", "fixtures/raw-html-sections.md", "--json"],
+    { encoding: "utf8" },
+  );
+  assert.equal(run.status, 2);
+  const result = JSON.parse(run.stdout);
+  assert.equal(result.status, "needs-work");
+  assert.equal(result.passed, 0);
 });
 
 test("CLI rejects required-section near misses with attached trailing hashes", () => {

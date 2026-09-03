@@ -52,7 +52,9 @@ The required level 2–6 Markdown headings are `When to use` (or `Trigger`),
 matching is case-insensitive; keywords elsewhere in the document do not satisfy
 a check. Complete and unclosed HTML comments are removed before headings and
 content are attributed, while visible text before or after a comment still
-counts. A section containing only a Markdown thematic break remains empty;
+counts. Markdown-looking headings and content inside CommonMark raw HTML
+blocks are also ignored; parsing resumes at the block's normal CommonMark
+boundary. A section containing only a Markdown thematic break remains empty;
 visible prose, list items, fenced code examples, and meaningful content in
 descendant subsections satisfy the required parent until a heading of equal or
 higher level begins. Content in an unrelated sibling section does not. Comment

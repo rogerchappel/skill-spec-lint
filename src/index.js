@@ -59,6 +59,7 @@ function sectionsByHeading(text) {
   const headingStack = [];
   let fence;
   let inComment = false;
+  let htmlBlock;
 
   const appendToOpenSections = (line) => {
     for (const { name } of headingStack) {
@@ -81,6 +82,15 @@ function sectionsByHeading(text) {
       continue;
     }
 
+    if (htmlBlock) {
+      if (htmlBlock.end === "blank") {
+        if (rawLine.trim() === "") htmlBlock = undefined;
+      } else if (htmlBlock.end.test(rawLine)) {
+        htmlBlock = undefined;
+      }
+      continue;
+    }
+
     const visibility = visibleHtml(rawLine, inComment);
     const line = visibility.line;
     inComment = visibility.inComment;
@@ -93,6 +103,14 @@ function sectionsByHeading(text) {
         marker: openingFence[1][0],
         length: openingFence[1].length,
       };
+      continue;
+    }
+
+    const openingHtmlBlock = matchHtmlBlockStart(line);
+    if (openingHtmlBlock) {
+      if (openingHtmlBlock.end === "blank" || !openingHtmlBlock.end.test(line)) {
+        htmlBlock = openingHtmlBlock;
+      }
       continue;
     }
 
@@ -121,6 +139,33 @@ function sectionsByHeading(text) {
   }
 
   return sections;
+}
+
+const BLOCK_TAGS = [
+  "address", "article", "aside", "base", "basefont", "blockquote", "body", "caption", "center",
+  "col", "colgroup", "dd", "details", "dialog", "dir", "div", "dl", "dt", "fieldset",
+  "figcaption", "figure", "footer", "form", "frame", "frameset", "h1", "h2", "h3", "h4",
+  "h5", "h6", "head", "header", "hr", "html", "iframe", "legend", "li", "link", "main",
+  "menu", "menuitem", "nav", "noframes", "ol", "optgroup", "option", "p", "param", "search",
+  "section", "summary", "table", "tbody", "td", "tfoot", "th", "thead", "title", "tr", "track",
+  "ul",
+];
+const BLOCK_TAG_PATTERN = new RegExp(
+  `^ {0,3}</?(?:${BLOCK_TAGS.join("|")})(?:[ \\t]+|/?>|$)`,
+  "i",
+);
+const COMPLETE_TAG_PATTERN = /^ {0,3}<\/?[A-Za-z][A-Za-z0-9-]*(?:[ \t]+[^<>]*)?\/?>[ \t]*$/;
+
+function matchHtmlBlockStart(line) {
+  const rawTag = line.match(/^ {0,3}<(script|pre|style|textarea)(?:[ \t]+|>|$)/i);
+  if (rawTag) return { end: new RegExp(`</${rawTag[1]}[ \\t]*>`, "i") };
+  if (/^ {0,3}<\?/.test(line)) return { end: /\?>/ };
+  if (/^ {0,3}<![A-Z]/.test(line)) return { end: />/ };
+  if (/^ {0,3}<!\[CDATA\[/.test(line)) return { end: /\]\]>/ };
+  if (BLOCK_TAG_PATTERN.test(line) || COMPLETE_TAG_PATTERN.test(line)) {
+    return { end: "blank" };
+  }
+  return undefined;
 }
 
 function visibleHtml(line, inComment) {
