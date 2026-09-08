@@ -60,6 +60,7 @@ function sectionsByHeading(text) {
   let fence;
   let inComment = false;
   let htmlBlock;
+  let paragraphOpen = false;
 
   const appendToOpenSections = (line) => {
     for (const { name } of headingStack) {
@@ -84,7 +85,10 @@ function sectionsByHeading(text) {
 
     if (htmlBlock) {
       if (htmlBlock.end === "blank") {
-        if (rawLine.trim() === "") htmlBlock = undefined;
+        if (rawLine.trim() === "") {
+          htmlBlock = undefined;
+          paragraphOpen = false;
+        }
       } else if (htmlBlock.end.test(rawLine)) {
         htmlBlock = undefined;
       }
@@ -103,14 +107,16 @@ function sectionsByHeading(text) {
         marker: openingFence[1][0],
         length: openingFence[1].length,
       };
+      paragraphOpen = false;
       continue;
     }
 
-    const openingHtmlBlock = matchHtmlBlockStart(line);
+    const openingHtmlBlock = matchHtmlBlockStart(line, !paragraphOpen);
     if (openingHtmlBlock) {
       if (openingHtmlBlock.end === "blank" || !openingHtmlBlock.end.test(line)) {
         htmlBlock = openingHtmlBlock;
       }
+      paragraphOpen = false;
       continue;
     }
 
@@ -133,8 +139,10 @@ function sectionsByHeading(text) {
         }
         headingStack.push({ level, name });
       }
+      paragraphOpen = false;
     } else {
       appendToOpenSections(line);
+      paragraphOpen = line.trim() !== "";
     }
   }
 
@@ -156,13 +164,13 @@ const BLOCK_TAG_PATTERN = new RegExp(
 );
 const COMPLETE_TAG_PATTERN = /^ {0,3}<\/?[A-Za-z][A-Za-z0-9-]*(?:[ \t]+[^<>]*)?\/?>[ \t]*$/;
 
-function matchHtmlBlockStart(line) {
+function matchHtmlBlockStart(line, allowTypeSeven = true) {
   const rawTag = line.match(/^ {0,3}<(script|pre|style|textarea)(?:[ \t]+|>|$)/i);
   if (rawTag) return { end: new RegExp(`</${rawTag[1]}[ \\t]*>`, "i") };
   if (/^ {0,3}<\?/.test(line)) return { end: /\?>/ };
   if (/^ {0,3}<![A-Z]/.test(line)) return { end: />/ };
   if (/^ {0,3}<!\[CDATA\[/.test(line)) return { end: /\]\]>/ };
-  if (BLOCK_TAG_PATTERN.test(line) || COMPLETE_TAG_PATTERN.test(line)) {
+  if (BLOCK_TAG_PATTERN.test(line) || (allowTypeSeven && COMPLETE_TAG_PATTERN.test(line))) {
     return { end: "blank" };
   }
   return undefined;

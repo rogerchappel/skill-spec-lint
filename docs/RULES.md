@@ -33,4 +33,7 @@ Inside a fenced example, HTML comment markers are ordinary example text and do
 not change the visibility of prose after the fence closes. CommonMark raw HTML
 blocks likewise cannot supply required headings or content. Section detection
 resumes after the raw block's CommonMark closing boundary, so later visible
-Markdown remains eligible.
+Markdown remains eligible. Type-7 complete tags, including custom elements,
+only start a blank-delimited raw HTML block when they occur outside a paragraph.
+A custom tag immediately following paragraph text remains inline content and
+does not hide a following visible section heading.
