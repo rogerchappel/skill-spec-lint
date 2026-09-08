@@ -299,6 +299,14 @@ for (const [name, newline] of [["LF", "\n"], ["CRLF", "\r\n"]]) {
     assert.equal(result.passed, 1);
     assert.equal(result.findings.find((finding) => finding.id === "inputs")?.passed, true);
   });
+
+  test(`type-7 complete tags do not interrupt paragraphs with ${name}`, () => {
+    const markdown = fixture("custom-tag-after-paragraph.md").replaceAll("\n", newline);
+    const result = auditText(markdown);
+
+    assert.equal(result.status, "pass");
+    assert.equal(result.passed, 6);
+  });
 }
 
 for (const [name, newline] of [["LF", "\n"], ["CRLF", "\r\n"]]) {
@@ -378,6 +386,18 @@ test("CLI rejects an all-fake CommonMark raw HTML skill", () => {
   const result = JSON.parse(run.stdout);
   assert.equal(result.status, "needs-work");
   assert.equal(result.passed, 0);
+});
+
+test("CLI recognizes sections after a type-7 tag within paragraph content", () => {
+  const run = spawnSync(
+    process.execPath,
+    ["bin/cli.js", "fixtures/custom-tag-after-paragraph.md", "--json"],
+    { encoding: "utf8" },
+  );
+  assert.equal(run.status, 0);
+  const result = JSON.parse(run.stdout);
+  assert.equal(result.status, "pass");
+  assert.equal(result.passed, 6);
 });
 
 test("CLI rejects required-section near misses with attached trailing hashes", () => {
