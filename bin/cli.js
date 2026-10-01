@@ -11,6 +11,8 @@ Arguments:
   --json      Emit JSON instead of a human-readable report.
   --help      Show this help (must be used alone).
 
+Headings: When to use (or Trigger), Inputs, Side effects, Approval, Examples, Verification.
+
 Exit codes: 0 pass, 1 argument or read error, 2 needs work.`;
 
 if (args.length === 1 && args[0] === "--help") {

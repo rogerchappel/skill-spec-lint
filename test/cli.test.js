@@ -38,8 +38,17 @@ test("help is successful and documents the complete argument contract", () => {
   const result = run("--help");
   assert.equal(result.status, 0);
   assert.match(result.stdout, /Usage: skill-spec-lint <SKILL\.md> \[--json\]/);
+  assert.match(result.stdout, /Headings: When to use \(or Trigger\), Inputs, Side effects, Approval, Examples, Verification\./);
   assert.match(result.stdout, /Exit codes: 0 pass, 1 argument or read error, 2 needs work\./);
   assert.equal(result.stderr, "");
+});
+
+test("semantically similar but unsupported headings do not satisfy a required section", () => {
+  const result = run(fixture("unsupported-heading-alias.md"), "--json");
+  const report = JSON.parse(result.stdout);
+
+  assert.equal(result.status, 2);
+  assert.equal(report.findings.find((finding) => finding.id === "trigger")?.passed, false);
 });
 
 for (const [name, args, diagnostic] of [
